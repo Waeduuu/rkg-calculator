@@ -1,68 +1,1155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Calculator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RK Garage Calculator</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background:
+            radial-gradient(circle at top, #3a0755 0%, #17051f 45%, #0d0712 100%);
+        color: white;
+        min-height: 100vh;
+        padding: 30px 16px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    /* HEADER */
+
+    .header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .logo {
+        width: 180px;
+        max-width: 80%;
+        margin-bottom: 20px;
+    }
+
+    .header h1 {
+        color: #e6b7ff;
+        font-size: 28px;
+        margin-bottom: 12px;
+    }
+
+    .header p {
+        color: #e0aaff;
+        font-size: 15px;
+        margin: 8px 0;
+    }
+
+    /* MAIN */
+
+    .main-box {
+        background: rgba(57, 27, 70, 0.75);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.35);
+    }
+
+    .section {
+        background: rgba(69, 40, 82, 0.75);
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 22px;
+    }
+
+    .section-title {
+        color: #f0d2ff;
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 18px;
+    }
+
+    /* INPUTS */
+
+    .input-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid #694879;
+        background: #171020;
+        color: white;
+        outline: none;
+        font-size: 14px;
+    }
+
+    input::placeholder {
+        color: #80718a;
+    }
+
+    input:focus,
+    select:focus {
+        border-color: #bd5cff;
+        box-shadow: 0 0 10px rgba(189,92,255,0.25);
+    }
+
+    /* MODIFICATION GRID */
+
+    .mod-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+
+    .mod-card {
+        background: rgba(42, 25, 51, 0.9);
+        border-radius: 18px;
+        padding: 18px;
+    }
+
+    .mod-card h3 {
+        color: #e7c5f5;
+        margin-bottom: 12px;
+        font-size: 17px;
+    }
+
+    .mod-action {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+    }
+
+    .add-btn {
+        border: none;
+        border-radius: 11px;
+        padding: 0 20px;
+        background: linear-gradient(135deg, #a63cff, #c875ff);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .add-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 18px rgba(190, 91, 255, 0.4);
+    }
+
+    /* LIST */
+
+    .selection {
+        background: rgba(42, 25, 51, 0.9);
+        border-radius: 18px;
+        padding: 20px;
+    }
+
+    .category-title {
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        margin-top: 15px;
+    }
+
+    .category-title:first-child {
+        margin-top: 0;
+    }
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .item-info {
+        font-size: 14px;
+    }
+
+    .item-price {
+        color: #d795ff;
+        font-weight: bold;
+    }
+
+    .remove-btn {
+        background: #ef3030;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 7px 13px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .remove-btn:hover {
+        background: #ff5050;
+    }
+
+    .empty {
+        color: #988a9f;
+        text-align: center;
+        padding: 25px;
+    }
+
+    /* TOTAL */
+
+    .total-box {
+        margin-top: 20px;
+        background: linear-gradient(
+            135deg,
+            rgba(108, 38, 145, 0.7),
+            rgba(55, 25, 70, 0.9)
+        );
+        border-radius: 16px;
+        padding: 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .total-title {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .total-price {
+        color: #e5a6ff;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    /* BUTTONS */
+
+    .bottom-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .reset-btn,
+    .print-btn {
+        border: none;
+        padding: 13px 25px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        color: white;
+    }
+
+    .reset-btn {
+        background: #ef3030;
+    }
+
+    .print-btn {
+        background: #7d36c9;
+    }
+
+    /* FOOTER */
+
+    .footer {
+        text-align: center;
+        color: #8f7b98;
+        margin-top: 25px;
+        font-size: 13px;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 750px) {
+
+        body {
+            padding: 15px 10px;
+        }
+
+        .main-box {
+            padding: 12px;
+        }
+
+        .input-grid,
+        .mod-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .mod-action {
+            grid-template-columns: 1fr;
+        }
+
+        .add-btn {
+            padding: 12px;
+        }
+
+        .total-box {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .item {
+            align-items: flex-start;
+        }
+    }
+
+</style>
 </head>
 
 <body>
 
-    <h1>My Calculator</h1>
+<div class="container">
 
-    <input id="display" type="text" readonly>
+    <!-- HEADER -->
 
-    <br><br>
+    <div class="header">
 
-    <button onclick="add('7')">7</button>
-    <button onclick="add('8')">8</button>
-    <button onclick="add('9')">9</button>
-    <button onclick="add('/')">÷</button>
+        <!--
+        GANTI LINK GAMBAR DI BAWAH DENGAN LOGO RK GARAGE KAMU
+        -->
+        <img
+            class="logo"
+            src="https://via.placeholder.com/180x120.png?text=RK+GARAGE"
+            alt="RK Garage"
+        >
 
-    <br>
+        <h1>RK GARAGE</h1>
 
-    <button onclick="add('4')">4</button>
-    <button onclick="add('5')">5</button>
-    <button onclick="add('6')">6</button>
-    <button onclick="add('*')">×</button>
+        <p>Pilih modifikasi kendaraan lalu klik Tambah</p>
 
-    <br>
+        <p>
+            NOTE : JIKA TIDAK ADA SENIOR/PEJNGGI MEKANIK DI KOTA
+            COBA TAG DI DC TERLEBIH DAHULU
+        </p>
 
-    <button onclick="add('1')">1</button>
-    <button onclick="add('2')">2</button>
-    <button onclick="add('3')">3</button>
-    <button onclick="add('-')">−</button>
+        <p>
+            JIKA TIDAK ADA YANG BISA KOTA/MERESPON
+            BISA DISURUH DATANG LAGI NANTI
+        </p>
 
-    <br>
+    </div>
 
-    <button onclick="add('0')">0</button>
-    <button onclick="add('.')">.</button>
-    <button onclick="calculate()">=</button>
-    <button onclick="add('+')">+</button>
 
-    <br><br>
+    <div class="main-box">
 
-    <button onclick="clearDisplay()">CLEAR</button>
+        <!-- DATA PEKERJA -->
 
-    <script>
+        <div class="section">
 
-        function add(value) {
-            document.getElementById("display").value += value;
+            <div class="section-title">
+                Data Pekerja
+            </div>
+
+            <div class="input-grid">
+
+                <input
+                    type="text"
+                    id="workerName"
+                    placeholder="Nama Pekerja"
+                >
+
+                <input
+                    type="text"
+                    id="workerRank"
+                    placeholder="Jabatan"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- DATA PELANGGAN -->
+
+        <div class="section">
+
+            <div class="section-title">
+                Data Pelanggan
+            </div>
+
+            <div class="input-grid">
+
+                <input
+                    type="text"
+                    id="customerName"
+                    placeholder="Nama Customer"
+                >
+
+                <input
+                    type="text"
+                    id="vehiclePlate"
+                    placeholder="Plat Kendaraan"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- MODIFICATION -->
+
+        <div class="section">
+
+            <div class="section-title">
+                Modifikasi Kendaraan
+            </div>
+
+            <div class="mod-grid">
+
+
+                <!-- PAINT -->
+
+                <div class="mod-card">
+
+                    <h3>PAINT</h3>
+
+                    <div class="mod-action">
+
+                        <select id="paint">
+
+                            <option value="20000">
+                                PRIMARY - $20,000
+                            </option>
+
+                            <option value="30000">
+                                SECONDARY - $30,000
+                            </option>
+
+                            <option value="40000">
+                                PEARLESCENT - $40,000
+                            </option>
+
+                            <option value="50000">
+                                CUSTOM PAINT - $50,000
+                            </option>
+
+                        </select>
+
+                        <button
+                            class="add-btn"
+                            onclick="addItem('PAINT', 'paint')"
+                        >
+                            Tambah
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- APPEARANCE -->
+
+                <div class="mod-card">
+
+                    <h3>APPEARANCE</h3>
+
+                    <div class="mod-action">
+
+                        <select id="appearance">
+
+                            <option value="15000">
+                                EXHAUST - $15,000
+                            </option>
+
+                            <option value="20000">
+                                BUMPER - $20,000
+                            </option>
+
+                            <option value="25000">
+                                HOOD - $25,000
+                            </option>
+
+                            <option value="30000">
+                                SPOILER - $30,000
+                            </option>
+
+                        </select>
+
+                        <button
+                            class="add-btn"
+                            onclick="addItem('APPEARANCE', 'appearance')"
+                        >
+                            Tambah
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- WINDOW TINT -->
+
+                <div class="mod-card">
+
+                    <h3>WINDOW TINT</h3>
+
+                    <div class="mod-action">
+
+                        <select id="windowTint">
+
+                            <option value="2000">
+                                0% - $2,000
+                            </option>
+
+                            <option value="5000">
+                                20% - $5,000
+                            </option>
+
+                            <option value="7500">
+                                50% - $7,500
+                            </option>
+
+                            <option value="10000">
+                                100% - $10,000
+                            </option>
+
+                        </select>
+
+                        <button
+                            class="add-btn"
+                            onclick="addItem('WINDOW TINT', 'windowTint')"
+                        >
+                            Tambah
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- INTERIOR -->
+
+                <div class="mod-card">
+
+                    <h3>INTERIOR</h3>
+
+                    <div class="mod-action">
+
+                        <select id="interior">
+
+                            <option value="15000">
+                                INTERIOR - $15,000
+                            </option>
+
+                            <option value="25000">
+                                CUSTOM INTERIOR - $25,000
+                            </option>
+
+                            <option value="35000">
+                                PREMIUM INTERIOR - $35,000
+                            </option>
+
+                        </select>
+
+                        <button
+                            class="add-btn"
+                            onclick="addItem('INTERIOR', 'interior')"
+                        >
+                            Tambah
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NEON -->
+
+                <div class="mod-card">
+
+                    <h3>NEON & XENON</h3>
+
+                    <div class="mod-action">
+
+                        <select id="neon">
+
+                            <option value="15000">
+                                NEON COLOR - $15,000
+                            </option>
+
+                            <option value="25000">
+                                NEON ALL 4 SIDE - $25,000
+                            </option>
+
+                            <option value="35000">
+                                XENON LIGHT - $35,000
+                            </option>
+
+                        </select>
+
+                        <button
+                            class="add-btn"
+                            onclick="addItem('NEON & XENON', 'neon')"
+                        >
+                            Tambah
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- WHEEL -->
+
+                <div class="mod-card">
+
+                    <h3>WHEEL</h3>
+
+                    <div class="mod-action">
+
+                        <select id="wheel">
+
+                            <option value="50000">
+                                CAMBER (STANCER) - $50,000
+                            </option>
+
+                            <option value="25000">
+                                CUSTOM WHEEL - $25,000
+                            </option>
+
+                            <option value="30000">
+                                WHEEL COLOR - $30,000
+                            </option>
+
+                        </select>
+
+                        <button
+                            class="add-btn"
+                            onclick="addItem('WHEEL', 'wheel')"
+                        >
+                            Tambah
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PERFORMANCE -->
+
+                <div class="mod-card">
+
+                    <h3>PERFORMANCE</h3>
+
+                    <div class="mod-action">
+
+                        <select id="performance">
+
+                            <option value="150000">
+                                ENGINE (CAR) - $150,000
+                            </option>
+
+                            <option value="100000">
+                                BRAKES - $100,000
+                            </option>
+
+                            <option value="75000">
+                                TRANSMISSION - $75,000
+                            </option>
+
+                            <option value="50000">
+                                TURBO - $50,000
+                            </option>
+
+                        </select>
+
+                        <button
+                            class="add-btn"
+                            onclick="addItem('PERFORMANCE', 'performance')"
+                        >
+                            Tambah
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SUSPENSION -->
+
+                <div class="mod-card">
+
+                    <h3>SUSPENSION</h3>
+
+                    <div class="mod-action">
+
+                        <select id="suspension">
+
+                            <option value="15000">
+                                LOWERED - $15,000
+                            </option>
+
+                            <option value="25000">
+                                SPORTS - $25,000
+                            </option>
+
+                            <option value="35000">
+                                COMPETITION - $35,000
+                            </option>
+
+                        </select>
+
+                        <button
+                            class="add-btn"
+                            onclick="addItem('SUSPENSION', 'suspension')"
+                        >
+                            Tambah
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EXTRAS -->
+
+                <div class="mod-card">
+
+                    <h3>EXTRAS</h3>
+
+                    <div class="mod-action">
+
+                        <select id="extras">
+
+                            <option value="15000">
+                                EXTRAS 1 - $15,000
+                            </option>
+
+                            <option value="20000">
+                                EXTRAS 2 - $20,000
+                            </option>
+
+                            <option value="25000">
+                                EXTRAS 3 - $25,000
+                            </option>
+
+                        </select>
+
+                        <button
+                            class="add-btn"
+                            onclick="addItem('EXTRAS', 'extras')"
+                        >
+                            Tambah
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- LIST -->
+
+        <div class="section">
+
+            <div class="section-title">
+                Daftar Pilihan
+            </div>
+
+            <div class="selection" id="selectionList">
+
+                <div class="empty" id="emptyMessage">
+                    Belum ada modifikasi dipilih.
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL -->
+
+            <div class="total-box">
+
+                <div class="total-title">
+                    TOTAL
+                </div>
+
+                <div class="total-price" id="totalPrice">
+                    $0
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="bottom-buttons">
+
+                <button
+                    class="reset-btn"
+                    onclick="resetCalculator()"
+                >
+                    RESET
+                </button>
+
+                <button
+                    class="print-btn"
+                    onclick="printReceipt()"
+                >
+                    PRINT
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        RK GARAGE © 2026
+    </div>
+
+</div>
+
+
+<script>
+
+    // ========================================
+    // DATA
+    // ========================================
+
+    let selectedItems = [];
+
+    let total = 0;
+
+
+    // ========================================
+    // ADD ITEM
+    // ========================================
+
+    function addItem(category, selectId) {
+
+        const select = document.getElementById(selectId);
+
+        const option = select.options[select.selectedIndex];
+
+        const name = option.text.split(" - $")[0];
+
+        const price = Number(select.value);
+
+
+        const item = {
+
+            id: Date.now() + Math.random(),
+
+            category: category,
+
+            name: name,
+
+            price: price
+
+        };
+
+
+        selectedItems.push(item);
+
+        updateList();
+
+        updateTotal();
+
+    }
+
+
+    // ========================================
+    // REMOVE ITEM
+    // ========================================
+
+    function removeItem(id) {
+
+        selectedItems = selectedItems.filter(
+            item => item.id !== id
+        );
+
+        updateList();
+
+        updateTotal();
+
+    }
+
+
+    // ========================================
+    // UPDATE LIST
+    // ========================================
+
+    function updateList() {
+
+        const list = document.getElementById("selectionList");
+
+        list.innerHTML = "";
+
+
+        if (selectedItems.length === 0) {
+
+            list.innerHTML = `
+                <div class="empty">
+                    Belum ada modifikasi dipilih.
+                </div>
+            `;
+
+            return;
         }
 
-        function clearDisplay() {
-            document.getElementById("display").value = "";
-        }
 
-        function calculate() {
-            let display = document.getElementById("display");
+        const categories = {};
 
-            try {
-                display.value = eval(display.value);
-            } catch {
-                display.value = "Error";
+
+        selectedItems.forEach(item => {
+
+            if (!categories[item.category]) {
+
+                categories[item.category] = [];
+
             }
+
+            categories[item.category].push(item);
+
+        });
+
+
+        Object.keys(categories).forEach(category => {
+
+            const title = document.createElement("div");
+
+            title.className = "category-title";
+
+            title.textContent = category;
+
+            list.appendChild(title);
+
+
+            categories[category].forEach(item => {
+
+                const row = document.createElement("div");
+
+                row.className = "item";
+
+
+                row.innerHTML = `
+
+                    <div class="item-info">
+
+                        • ${item.name}
+
+                        <span class="item-price">
+                            ($${formatMoney(item.price)})
+                        </span>
+
+                    </div>
+
+                    <button
+                        class="remove-btn"
+                        onclick="removeItem(${item.id})"
+                    >
+                        Hapus
+                    </button>
+
+                `;
+
+
+                list.appendChild(row);
+
+            });
+
+        });
+
+    }
+
+
+    // ========================================
+    // TOTAL
+    // ========================================
+
+    function updateTotal() {
+
+        total = selectedItems.reduce(
+
+            (sum, item) => sum + item.price,
+
+            0
+
+        );
+
+
+        document.getElementById("totalPrice").textContent =
+            "$" + formatMoney(total);
+
+    }
+
+
+    // ========================================
+    // MONEY FORMAT
+    // ========================================
+
+    function formatMoney(number) {
+
+        return number.toLocaleString("en-US");
+
+    }
+
+
+    // ========================================
+    // RESET
+    // ========================================
+
+    function resetCalculator() {
+
+        const confirmReset = confirm(
+            "Yakin mahu reset semua data?"
+        );
+
+
+        if (!confirmReset) {
+
+            return;
+
         }
 
-    </script>
+
+        selectedItems = [];
+
+        total = 0;
+
+
+        document.getElementById("workerName").value = "";
+
+        document.getElementById("workerRank").value = "";
+
+        document.getElementById("customerName").value = "";
+
+        document.getElementById("vehiclePlate").value = "";
+
+
+        updateList();
+
+        updateTotal();
+
+    }
+
+
+    // ========================================
+    // PRINT
+    // ========================================
+
+    function printReceipt() {
+
+        const worker =
+            document.getElementById("workerName").value || "-";
+
+        const rank =
+            document.getElementById("workerRank").value || "-";
+
+        const customer =
+            document.getElementById("customerName").value || "-";
+
+        const plate =
+            document.getElementById("vehiclePlate").value || "-";
+
+
+        let receipt = "";
+
+        receipt += "==============================\n";
+
+        receipt += "        RK GARAGE\n";
+
+        receipt += "==============================\n\n";
+
+
+        receipt += "DATA PEKERJA\n";
+
+        receipt += "Nama     : " + worker + "\n";
+
+        receipt += "Jabatan  : " + rank + "\n\n";
+
+
+        receipt += "DATA PELANGGAN\n";
+
+        receipt += "Nama     : " + customer + "\n";
+
+        receipt += "Plat     : " + plate + "\n\n";
+
+
+        receipt += "MODIFIKASI\n";
+
+        receipt += "------------------------------\n";
+
+
+        selectedItems.forEach(item => {
+
+            receipt +=
+                item.name +
+                " - $" +
+                formatMoney(item.price) +
+                "\n";
+
+        });
+
+
+        receipt += "\n------------------------------\n";
+
+        receipt +=
+            "TOTAL: $" +
+            formatMoney(total) +
+            "\n";
+
+        receipt += "==============================\n";
+
+
+        const newWindow = window.open("", "_blank");
+
+
+        newWindow.document.write(`
+
+            <html>
+
+            <head>
+
+                <title>RK Garage Receipt</title>
+
+                <style>
+
+                    body {
+                        font-family: Arial;
+                        padding: 30px;
+                        white-space: pre-line;
+                    }
+
+                </style>
+
+            </head>
+
+            <body>
+
+                ${receipt}
+
+            </body>
+
+            </html>
+
+        `);
+
+
+        newWindow.document.close();
+
+        newWindow.print();
+
+    }
+
+</script>
 
 </body>
 </html>
